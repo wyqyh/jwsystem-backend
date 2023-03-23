@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.ClassDao">
+	<select id="getClassno" resultType="java.lang.String">
+		select classno from t_class order by create_time desc
+	</select>
+	
+	<select id="getByClassno" parameterType="java.lang.String" resultType="com.ldsg.jwsystem.entity.Class">
+		select 
+			id, classno, stunum, termid, trainlevelid, tasktypeid, majorid, deptid 
+			date_format(create_time, '%Y-%m-%d') as createTime 
+		from 
+			t_class 
+		where classno = #{classno}
+	</select>
+	
+	<select id="getClassById" parameterType="java.lang.Integer" resultType="com.ldsg.jwsystem.entity.Class">
+		select 
+			id, classno, stunum, termid, trainlevelid, tasktypeid, majorid, deptid, 
+			date_format(create_time, '%Y-%m-%d') as createTime 
+		from 
+			t_class 
+		where id = #{id}
+	</select>
+	
+	<insert id="addClass" parameterType="com.ldsg.jwsystem.request.ClassRequest">
+		insert into t_class(classno, stunum, termid, trainlevelid, tasktypeid, majorid, deptid, create_time) 
+		values(#{classno}, #{stunum}, #{termid}, #{trainlevelid}, #{tasktypeid}, #{majorid}, #{deptid}, now())
+	</insert>
+	
+	<select id="pageGetClass" parameterType="com.ldsg.jwsystem.request.PageClassRequest" resultType="com.ldsg.jwsystem.entity.Class">
+		select 
+			id, classno, stunum, termid, deptid, majorid, trainlevelid, tasktypeid, 
+			date_format(create_time, '%Y-%m-%d') as createTime 
+		from 
+			t_class
+		where 1 = 1 
+		<if test="classnos != null and classnos.size > 0">
+			and classno in
+			<foreach collection="classnos" item="classno" separator="," open="(" close=")">
+				#{classno}
+			</foreach>
+		</if> 
+		<if test="termids != null and termids.size > 0">
+			and termid in
+			<foreach collection="termids" item="termid" separator="," open="(" close=")">
+				#{termid}
+			</foreach>
+		</if>
+		<if test="deptids != null and deptids.size > 0">
+			and deptid in
+			<foreach collection="deptids" item="deptid" separator="," open="(" close=")">
+				#{deptid}
+			</foreach>
+		</if>
+		<if test="majorids != null and majorids.size > 0">
+			and majorid in
+			<foreach collection="majorids" item="majorid" separator="," open="(" close=")">
+				#{majorid}
+			</foreach>
+		</if>
+		<if test="trainlevelids != null and trainlevelids.size > 0">
+			and trainlevelid in
+			<foreach collection="trainlevelids" item="trainlevelid" separator="," open="(" close=")">
+				#{trainlevelid}
+			</foreach>
+		</if>
+		<if test="tasktypeids != null and tasktypeids.size > 0">
+			and tasktypeid in
+			<foreach collection="tasktypeids" item="tasktypeid" separator="," open="(" close=")">
+				#{tasktypeid}
+			</foreach>
+		</if>
+		order by create_time desc
+	</select>
+	
+	<update id="updateClass" parameterType="com.ldsg.jwsystem.request.ClassRequest">
+		update t_class set classno = #{classno}, stunum = #{stunum}, termid = #{termid}, trainlevelid = #{trainlevelid}, 
+			tasktypeid = #{tasktypeid}, majorid = #{majorid}, deptid = #{deptid} where id = #{id}
+	</update>
+	
+	<delete id="deleteClass">
+		delete from t_class where id in 
+		<foreach collection="ids" item="id" open="(" close=")">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

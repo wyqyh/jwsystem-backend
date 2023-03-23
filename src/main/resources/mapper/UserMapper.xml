@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.UserDao">
+	
+	<resultMap id="UserRolesPermissionsVo" type="com.ldsg.jwsystem.vo.UserRolesPermissionsVo">
+		<result property="uid" column="id"/>
+		<result property="uname" column="name"/>
+		<result property="deptid" column="deptid"/>
+		<association property="deptname" column="deptid" javaType="java.lang.String" select="com.ldsg.jwsystem.dao.DepartmentDao.getDeptnameById"/>
+		<collection property="rolePermissions" column="id" javaType="java.util.List" select="com.ldsg.jwsystem.dao.RoleDao.getRolesPermissionsByUid"/>
+	</resultMap>
+	
+	
+	<insert id="addUser" parameterType="com.ldsg.jwsystem.entity.User" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		insert into t_user(`name`, account, password, deptid, contact, avatar, usertype, sex, phone, create_time) 
+		values(#{name}, #{account}, #{password}, #{deptid}, #{contact}, #{avatar}, #{usertype}, #{sex}, #{phone}, now())
+	</insert>
+	
+	<select id="getUserByAccountPassword" resultType="com.ldsg.jwsystem.entity.User">
+		select 
+			id, `name`, account, deptid, contact, avatar, usertype, sex, phone,
+			date_format(create_time, '%Y-%m-%d %H:%i:%S') AS createTime
+		from 
+			t_user 
+		where account = #{account} 
+			and password = #{password}
+	</select>
+	
+	<select id="getUserRolesPermissions" parameterType="java.lang.Integer" resultMap="UserRolesPermissionsVo">
+		select id, `name`, deptid from t_user where id = #{id}
+	</select>
+	
+	<select id="getUserByUid" parameterType="java.lang.Integer" resultType="com.ldsg.jwsystem.entity.User">
+		select 
+			id, `name`, account, password, deptid, contact, avatar, usertype, sex, phone,
+			date_format(create_time, '%Y-%m-%d %H:%i:%S') AS createTime
+		from 
+			t_user 
+		where id = #{uid}
+	</select>
+	
+	<select id="getUsers" resultType="com.ldsg.jwsystem.entity.User">
+		select 
+			t.id, t.`name`, t.account, t.deptid, t.contact, t.avatar, t.usertype, t.sex, t.phone,
+			date_format(t.create_time, '%Y-%m-%d %H:%i:%S') AS createTime
+		from 
+			t_user t 
+		where 1 = 1
+		<if test="uname != null and uname != ''">
+    		and t.name like concat('%',#{uname},'%')
+    	</if>
+    	<if test="deptIds != null and deptIds.size() > 0">
+    		and deptid in 
+    		<foreach collection="deptIds" separator="," item="deptId" open="(" close=")">
+	    		#{deptId}
+	    	</foreach>
+    	</if>
+	</select>
+	
+	<update id="setDeptNull" parameterType="java.lang.Integer">
+		update t_user set deptid = null where deptid = #{deptid}
+	</update>
+	
+	<update id="updateUser" parameterType="com.ldsg.jwsystem.request.UserRequest">
+		update 
+			t_user 
+		set 
+			`name` = #{name}, 
+			account = #{account}, 
+			deptid = #{deptid}, 
+			contact = #{contact},
+			sex = #{sex},
+			phone = #{phone}
+		where id = #{id}
+	</update>
+	
+	<delete id="delUsers" parameterType="java.lang.Integer">
+		delete from t_user where id in
+		<foreach collection="list" separator="," item="uid" open="(" close=")">
+    		#{uid}
+    	</foreach>
+	</delete>
+	
+	<update id="updateAvatar">
+		update t_user set avatar = #{avatarPath} where id = #{uid}
+	</update>
+	
+	<update id="updatePwd">
+		update t_user set password = #{newPwd} where id = #{uid}
+	</update>
+</mapper>

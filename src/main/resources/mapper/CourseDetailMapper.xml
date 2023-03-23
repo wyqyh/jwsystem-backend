@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.CourseDetailDao">
+	<select id="findAllDetailBySksj" resultType="com.ldsg.jwsystem.vo.CourseDetailVo">
+		select 
+			d.id, s.classno, s.termid, s.trainlevelid, s.majorid, c.coursename, d.teacherid, 
+			u.name as teachername, d.teachlocid, d.teachdate, d.teachsessid
+		from 
+			t_course_detail d, t_course c, t_user u, t_class s
+		where d.courseid = c.id 
+			and c.classid = s.id
+			and d.teacherid = u.id
+			and d.teachdate=#{teachdate} 
+			and d.teachsessid=#{teachsessid}
+	</select>
+	
+	<insert id="addCourseDetail" parameterType="com.ldsg.jwsystem.entity.CourseDetail">
+		insert into t_course_detail(courseid, teacherid, prime, teachtypeid, teachdate, teachlocid, teachsessid, teachcontent, create_time)
+		values(#{courseid}, #{teacherid}, #{prime}, #{teachtypeid}, #{teachdate}, #{teachlocid}, #{teachsessid}, #{teachcontent}, now())
+	</insert>
+</mapper>

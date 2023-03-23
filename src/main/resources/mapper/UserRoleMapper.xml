@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.UserRoleDao">
+
+	<insert id="batchInsert" parameterType="java.util.List">
+		insert into t_user_role(uid, rid) values 
+		<foreach collection="list" separator="," item="item">
+    		(#{item.uid}, #{item.rid})
+    	</foreach>
+	</insert>
+	
+	<delete id="delByUid" parameterType="java.lang.Integer">
+		delete from t_user_role where uid=#{uid}
+	</delete>
+	
+	<select id="getRoleIdsByUid" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select rid from t_user_role where uid = #{uid}
+	</select>
+	
+	<select id="getRoleIdsByUids" resultType="com.ldsg.jwsystem.entity.UserRole">
+		select * from t_user_role where uid in 
+		<foreach collection="list" separator="," item="item" open="(" close=")">
+    		#{item}
+    	</foreach>
+	</select>
+</mapper>

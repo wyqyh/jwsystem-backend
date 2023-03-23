@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.PermissionDao">
+
+	<resultMap id="PermissionVo" type="com.ldsg.jwsystem.vo.PermissionVo">
+		<result property="perid" column="id"/>
+		<result property="parentId" column="pid"/>
+		<result property="pername" column="name"/>
+		<result property="key" column="key"/>
+		<result property="component" column="component"/>
+		<result property="hidden" column="hidden"/>
+		<result property="path" column="path"/>
+		<result property="type" column="type"/>
+	</resultMap>
+	
+	<select id="getPermissionsByRid" resultMap="PermissionVo">
+		SELECT
+			p.id,
+			p.pid,
+			p.`name`,
+			p.icon,
+			p.path,
+			p.`key`,
+			p.component,
+			p.hidden,
+			p.type
+		FROM
+			t_permission p,
+			t_role_permission rm
+		WHERE
+			p.id = rm.perid
+		AND rm.rid = #{rid}
+	</select>
+	
+	<select id="getPermissionsByUid" parameterType="java.lang.Integer" resultType="com.ldsg.jwsystem.entity.Permission">
+		SELECT
+			p.*
+		FROM
+			t_permission p,
+			(select distinct rp.perid from t_user u,t_user_role ur,t_role_permission rp where u.id=#{uid} and u.id=ur.uid and ur.rid=rp.rid) as t
+		where p.id=t.perid
+	</select>
+	
+	<select id="getPermissions" resultType="com.ldsg.jwsystem.entity.Permission">
+		SELECT
+			p.*
+		FROM
+			t_permission p
+		where 1 = 1
+		<if test="permName != null and permName != ''">
+			and p.name like concat('%', #{permName}, '%')
+		</if>
+	</select>
+	
+	<insert id="insertPermission" parameterType="com.ldsg.jwsystem.entity.Permission">
+		insert into t_permission(pid, `name`, icon, path, `key`, component, hidden, type) 
+		values(#{pid}, #{name}, #{icon}, #{path}, #{key}, #{component}, #{hidden}, #{type})
+	</insert>
+	
+	<update id="updatePermission" parameterType="com.ldsg.jwsystem.entity.Permission">
+		 update 
+		 	t_permission 
+		 set 
+		 	pid = #{pid}, 
+		 	`name` = #{name}, 
+		 	icon = #{icon}, 
+		 	path = #{path}, 
+		 	`key` = #{key}, 
+		 	component = #{component}, 
+		 	hidden = #{hidden}, 
+		 	type = #{type}
+		 where 
+		 	id = #{id}
+	</update>
+	
+	<delete id="deleteByIds" parameterType="java.lang.Integer">
+		delete from t_permission where id in 
+		<foreach collection="list" separator="," item="permId" open="(" close=")">
+    		#{permId}
+    	</foreach>
+	</delete>
+	
+	<select id="getPermissionById" resultType="com.ldsg.jwsystem.entity.Permission">
+		SELECT
+			p.*
+		FROM
+			t_permission p
+		where id = #{permId}
+	</select>
+</mapper>

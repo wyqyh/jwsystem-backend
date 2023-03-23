@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.RoleDao">
+
+	<resultMap id="RolePermissionsVo" type="com.ldsg.jwsystem.vo.RolePermissionsVo">
+		<result property="rid" column="id"/>
+		<result property="rname" column="name"/>
+		<collection property="permissions" column="id" javaType="java.util.List" select="com.ldsg.jwsystem.dao.PermissionDao.getPermissionsByRid"/>
+	</resultMap>
+	
+	<select id="getRolesPermissionsByUid" resultMap="RolePermissionsVo">
+		select r.id, r.`name` from t_role r, t_user_role ur where r.id=ur.rid and ur.uid=#{uid}
+	</select>
+	
+	<select id="getRolesList" resultType="com.ldsg.jwsystem.entity.Role">
+		select 
+			t.id, 
+			t.`name`, 
+			t.`key`, 
+			t.sort, 
+			t.status, 
+			t.admin,
+			t.remark,
+    		DATE_FORMAT(t.create_time,'%Y-%m-%d %H:%m:%s') create_time 
+    	from 
+    		t_role t
+    	where 1=1
+    	<if test="roleName != null and roleName != ''">
+    		and t.name like concat('%',#{roleName},'%')
+    	</if>
+    	<if test="roleKey != null and roleKey != ''">
+    		and t.key like concat('%',#{roleKey},'%')
+    	</if>
+    	<if test="status != null and status != ''">
+    		and t.status = #{status}
+    	</if>
+    	<if test="beginTime != null and beginTime != ''">
+    		<![CDATA[ and DATE_FORMAT(t.create_time, '%Y-%m-%d') >= #{beginTime} ]]>
+    	</if>
+    	<if test="endTime != null and endTime != ''">
+    		<![CDATA[ and DATE_FORMAT(t.create_time, '%Y-%m-%d') <= #{endTime} ]]>
+    	</if>
+	</select>
+	
+	<insert id="addRole" parameterType="com.ldsg.jwsystem.entity.Role" useGeneratedKeys="true" keyProperty="id">
+		insert into t_role(`name`, `key`, sort, `status`, admin, remark, create_time) values(#{name}, #{key}, #{sort}, #{status}, #{admin}, #{remark}, now())
+	</insert>
+	
+	<select id="getRoleById" resultType="com.ldsg.jwsystem.entity.Role">
+		select id, `name`, `key`, sort, `status`, remark from t_role where id = #{roleId}
+	</select>
+	
+	<update id="updateRole" parameterType="com.ldsg.jwsystem.entity.Role">
+		update t_role set `name` = #{name}, `key` = #{key}, sort = #{sort}, `status` = #{status}, remark = #{remark} where id = #{id}
+	</update>
+	
+	<delete id="deleteByRoleId">
+		delete from t_role where id = #{roleId}
+	</delete>
+	
+	<delete id="deleteByRoleIds" parameterType="java.lang.Integer">
+		delete from t_role where id in 
+		<foreach collection="list" separator="," item="roleId" open="(" close=")">
+    		#{roleId}
+    	</foreach>
+	</delete>
+	
+	<update id="updateRoleStatus">
+		update t_role set `status` = #{status} where id = #{roleId}
+	</update>
+</mapper>

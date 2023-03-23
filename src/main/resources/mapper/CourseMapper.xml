@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.CourseDao">
+	<select id="getCoursename" resultType="com.ldsg.jwsystem.response.CourseResponse">
+		select id, coursename from t_course
+	</select>
+	
+	<select id="pageGetCourses" parameterType="com.ldsg.jwsystem.request.PageCourseRequest" resultType="com.ldsg.jwsystem.vo.CourseVo">
+		select 
+			c.id, t.id as classid, t.classno, t.termid, t.trainlevelid, c.coursename, t.majorid, t.stunum,
+			t.deptid, t.tasktypeid, c.practicetype, c.theroyhour, c.practicehour, c.prime, c.batchcoeff,
+			c.teacherid, date_format(c.create_time, '%Y-%m-%d') as createTime  
+		from 
+			t_class t, t_course c
+		where t.id = c.classid
+		<if test="classnos != null and classnos.size > 0">
+			and t.classno in
+			<foreach collection="classnos" item="classno" separator="," open="(" close=")">
+				#{classno}
+			</foreach>
+		</if> 
+		<if test="termids != null and termids.size > 0">
+			and t.termid in
+			<foreach collection="termids" item="termid" separator="," open="(" close=")">
+				#{termid}
+			</foreach>
+		</if>
+		<if test="majorids != null and majorids.size > 0">
+			and t.majorid in
+			<foreach collection="majorids" item="majorid" separator="," open="(" close=")">
+				#{majorid}
+			</foreach>
+		</if>
+		<if test="trainlevelids != null and trainlevelids.size > 0">
+			and t.trainlevelid in
+			<foreach collection="trainlevelids" item="trainlevelid" separator="," open="(" close=")">
+				#{trainlevelid}
+			</foreach>
+		</if>
+		<if test="tasktypeids != null and tasktypeids.size > 0">
+			and t.tasktypeid in
+			<foreach collection="tasktypeids" item="tasktypeid" separator="," open="(" close=")">
+				#{tasktypeid}
+			</foreach>
+		</if>
+		<if test="practicetypes != null and practicetypes.size > 0">
+			and c.practicetype in 
+			<foreach collection="practicetypes" item="practicetype" separator="," open="(" close=")">
+				#{practicetype}
+			</foreach>
+		</if>
+		<if test="coursenames != null and coursenames.size > 0">
+			and c.coursename in 
+			<foreach collection="coursenames" item="coursename" separator="," open="(" close=")">
+				#{coursename}
+			</foreach>
+		</if>
+		order by c.create_time desc
+	</select>
+	
+	<insert id="addCourse" parameterType="com.ldsg.jwsystem.entity.Course">
+		insert into t_course(classid, coursename, practicetype, theroyhour, practicehour, prime, batchcoeff, teacherid, create_time)
+		values(#{classid}, #{coursename}, #{practicetype}, #{theroyhour}, #{practicehour}, #{prime}, #{batchcoeff}, #{teacherid}, now())
+	</insert>
+	
+	<select id="getCourseByClassid" parameterType="java.lang.Integer" resultType="com.ldsg.jwsystem.entity.Course">
+		select id, classid, coursename from t_course where classid=#{classid}
+	</select>
+</mapper>

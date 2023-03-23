@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.ClassroomDao">
+	<insert id="insert" parameterType="com.ldsg.jwsystem.request.ClassroomRequest">
+		insert into t_classroom(roomno, locationid) values(#{roomno}, #{locationid})
+	</insert>
+	
+	<select id="getAll" resultType="com.ldsg.jwsystem.response.ClassroomResponse">
+		select 
+			c.id, c.roomno, c.locationid, d.`name`
+		from 
+			t_classroom c, 
+			t_type_data d
+		where 
+			c.locationid = d.id and d.typeno = '1009'
+		<if test="location != null and location != ''">
+			and d.name like concat('%', #{location}, '%')
+		</if>
+	</select>
+	
+	<update id="updateClassroom" parameterType="com.ldsg.jwsystem.request.ClassroomRequest">
+		update t_classroom set roomno = #{roomno}, locationid = #{locationid} where id = #{id}
+	</update>
+	
+	<delete id="deleteByIds" parameterType="java.lang.Integer">
+		delete from t_classroom where id in
+		<foreach collection="list" separator="," item="id" open="(" close=")">
+    		#{id}
+    	</foreach>
+	</delete>
+</mapper>

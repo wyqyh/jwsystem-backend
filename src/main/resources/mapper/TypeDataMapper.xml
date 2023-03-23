@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.TypeDataDao">
+
+	<insert id="insert" parameterType="com.ldsg.jwsystem.entity.TypeData">
+		insert into t_type_data(typeid, typeno, name) values(#{typeid}, #{typeno}, #{name})
+	</insert>
+	
+	<select id="getByTypeids" resultType="com.ldsg.jwsystem.response.TypeDataResponse">
+		select 
+			d.id, d.typeid, d.typeno, d.name, m.name as typename 
+		from 
+			t_type_data d, t_type_manage m 
+		where m.id=d.typeid
+		<if test="typeids.size > 0">
+			and d.typeid in 
+			<foreach collection="list" separator="," item="typeid" open="(" close=")">
+	    		#{typeid}
+	    	</foreach>
+		</if>
+		order by typeid
+	</select>
+	
+	<select id="getDataByTypeno" resultType="com.ldsg.jwsystem.response.TypeDataResponse">
+		select d.id, d.name from t_type_data d where d.typeno = #{typeno}
+	</select>
+	
+	<select id="getDataByTypenos" resultType="com.ldsg.jwsystem.response.TypeDataResponse">
+		select d.id, d.typeid, d.typeno, d.name from t_type_data d where 1=1
+		<if test="typenos.size > 0">
+			and d.typeno in 
+			<foreach collection="list" separator="," item="typeno" open="(" close=")">
+	    		#{typeno}
+	    	</foreach>
+		</if>
+	</select>
+	
+	<delete id="deleteByIds" parameterType="java.lang.Integer">
+		delete from t_type_data where id in
+		<foreach collection="list" separator="," item="id" open="(" close=")">
+    		#{id}
+    	</foreach>
+	</delete>
+	
+	<update id="updateTypeData">
+		update t_type_data set typeid = #{typeid}, typeno = #{typeno}, name = #{name} where id = #{dataid}
+	</update>
+	
+	<select id="listTypeData" resultType="com.ldsg.jwsystem.entity.TypeData">
+		select id, name from t_type_data
+	</select>
+</mapper>

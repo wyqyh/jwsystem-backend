@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldsg.jwsystem.dao.StudentDao">
+	<insert id="batchAddStus" parameterType="com.ldsg.jwsystem.entity.Student">
+		insert into t_student(classid, stuno, stuname, sex, origin, tel, idcard, address, political, create_time) values
+		<foreach collection="list" separator="," item="item">
+	        (#{item.classid}, #{item.stuno}, #{item.stuname}, #{item.sex}, #{item.origin}, #{item.tel}, #{item.idcard}, #{item.address}, #{item.political}, now())
+	    </foreach>
+	</insert>
+	
+	<select id="listStudent" parameterType="com.ldsg.jwsystem.request.StudentRequest" resultType="com.ldsg.jwsystem.entity.Student">
+		select 
+			id, classid, stuno, stuname, sex, origin, tel, idcard, address, political
+		from
+			t_student
+		where 1 = 1
+		<if test="classid > 0">
+			and classid = #{classid}		
+		</if>
+	</select>
+</mapper>
