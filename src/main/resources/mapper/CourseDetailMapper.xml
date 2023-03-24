@@ -16,7 +16,24 @@
 	</select>
 	
 	<insert id="addCourseDetail" parameterType="com.ldsg.jwsystem.entity.CourseDetail">
-		insert into t_course_detail(courseid, teacherid, prime, teachtypeid, teachdate, teachlocid, teachsessid, teachcontent, create_time)
-		values(#{courseid}, #{teacherid}, #{prime}, #{teachtypeid}, #{teachdate}, #{teachlocid}, #{teachsessid}, #{teachcontent}, now())
+		insert into t_course_detail(courseid, teacherid, prime, teachtypeid, teachdate, teachlocid, teachsessid, teachcontent, createrid, create_time)
+		values(#{courseid}, #{teacherid}, #{prime}, #{teachtypeid}, #{teachdate}, #{teachlocid}, #{teachsessid}, #{teachcontent}, #{createrid}, now())
 	</insert>
+	
+	<select id="listCourseDetail" parameterType="com.ldsg.jwsystem.request.PageCourseDetailReq" resultType="com.ldsg.jwsystem.vo.CourseDetailVo">
+		select 
+			d.id, s.classno, s.termid, s.trainlevelid, s.majorid, c.coursename, d.teacherid, 
+			u.name as teachername, d.teachlocid, d.teachdate, d.teachsessid
+		from 
+			t_course_detail d, t_course c, t_user u, t_class s
+		where d.courseid = c.id 
+			and c.classid = s.id
+			and d.teacherid = u.id
+		<if test="classid > 0">
+			and c.classid=#{classid}
+		</if>	
+		<if test="uid > 0">
+			and u.id=#{uid}
+		</if>
+	</select>
 </mapper>

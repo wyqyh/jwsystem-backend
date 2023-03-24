@@ -13,6 +13,7 @@ public class CourseDetailRequest {
 	private int teachlocid;
 	private int teachsessid;
 	private String teachcontent;
+	private int createrid;
 	
 	public int getId() {
 		return id;
@@ -79,5 +80,11 @@ public class CourseDetailRequest {
 	}
 	public void setTeachcontent(String teachcontent) {
 		this.teachcontent = teachcontent;
+	}
+	public int getCreaterid() {
+		return createrid;
+	}
+	public void setCreaterid(int createrid) {
+		this.createrid = createrid;
 	}
 }

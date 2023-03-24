@@ -8,6 +8,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.ldsg.jwsystem.dao.CourseDetailDao;
 import com.ldsg.jwsystem.dao.TypeDataDao;
@@ -15,6 +17,7 @@ import com.ldsg.jwsystem.entity.CourseDetail;
 import com.ldsg.jwsystem.entity.TypeData;
 import com.ldsg.jwsystem.enums.Message;
 import com.ldsg.jwsystem.request.CourseDetailRequest;
+import com.ldsg.jwsystem.request.PageCourseDetailReq;
 import com.ldsg.jwsystem.response.CourseDetailResponse;
 import com.ldsg.jwsystem.service.CourseDetailService;
 import com.ldsg.jwsystem.vo.CourseDetailVo;
@@ -32,11 +35,60 @@ public class CourseDetailServiceImpl implements CourseDetailService {
 	@Override
 	public CourseDetailResponse addCourseDetail(CourseDetailRequest courseDetailRequest) {
 		CourseDetailResponse response = new CourseDetailResponse();
+		List<TypeData> typeDatas = this.typeDataDao.listTypeData();
+		//冲突检测
+		List<CourseDetailVo> conflictDetail = this.checkConflict(courseDetailRequest);
+		// 存在冲突
+		if(CollectionUtils.isNotEmpty(conflictDetail) && CollectionUtils.isNotEmpty(typeDatas)) {
+			fillNameInfo(conflictDetail, typeDatas);
+			response.setCode(Message.DETAILCOURSECONFLICT.getCode());
+			response.setMessage(Message.DETAILCOURSECONFLICT.getMsg());
+			response.setCourseDetailVos(conflictDetail);
+			return response;
+		}
+		//添加细化课表
+		CourseDetail courseDetail = new CourseDetail(courseDetailRequest.getCourseid(),
+				courseDetailRequest.getTeacherid(), courseDetailRequest.getPrime(),
+				courseDetailRequest.getTeachtypeid(), courseDetailRequest.getTeachdate(),
+				courseDetailRequest.getTeachlocid(), courseDetailRequest.getTeachsessid(),
+				courseDetailRequest.getTeachcontent(), courseDetailRequest.getCreaterid());
+		this.courseDetailDao.addCourseDetail(courseDetail);
+		//细化课表添加成功则获取当前用户在当前期班的细化课表
+		PageCourseDetailReq pageCourseDetailReq = new PageCourseDetailReq(courseDetailRequest.getTeacherid(), 
+				courseDetailRequest.getClassid(), 1, 10);
+		PageInfo<CourseDetailVo> pageCourseDetailVos = this.pageCourseDetail(pageCourseDetailReq);
+		response.setPageCourseDetailVos(pageCourseDetailVos);
+		response.setCode(Message.DETAILCOURSEADDSUCCESS.getCode());
+		response.setMessage(Message.DETAILCOURSEADDSUCCESS.getMsg());
+		return response;
+	}
+	
+	@Override
+	public PageInfo<CourseDetailVo> pageCourseDetail(PageCourseDetailReq pageCourseDetailReq) {
+		
+		int pagenum = pageCourseDetailReq.getPagenum();
+		int pagesize = pageCourseDetailReq.getPagesize();
+		
+		PageHelper.startPage(pagenum, pagesize, true);
+		List<CourseDetailVo> courseDetailVos = this.courseDetailDao.listCourseDetail(pageCourseDetailReq);
+		
+		List<TypeData> typeDatas = this.typeDataDao.listTypeData();
+		if(CollectionUtils.isNotEmpty(courseDetailVos) && CollectionUtils.isNotEmpty(typeDatas)) {
+			fillNameInfo(courseDetailVos, typeDatas);
+		}
+		
+		PageInfo<CourseDetailVo> pageCourseDetail = new PageInfo<CourseDetailVo>(courseDetailVos);
+		return pageCourseDetail;
+	}
+
+	private List<CourseDetailVo> checkConflict(CourseDetailRequest courseDetailRequest) {
 		String teachdate = courseDetailRequest.getTeachdate();
 		int teachsessid = courseDetailRequest.getTeachsessid();
 		//1.根据授课日期和授课节次查询细化课表
 		List<CourseDetailVo> courseDetailBySksj = this.courseDetailDao.findAllDetailBySksj(teachdate, teachsessid);
-		List<TypeData> typeDatas = this.typeDataDao.listTypeData();
+		if(CollectionUtils.isEmpty(courseDetailBySksj)) {
+			return null;
+		}
 		//2.检查教室是否冲突，授课日期+授课节次+授课教室
 		int teachlocid = courseDetailRequest.getTeachlocid();
 		List<CourseDetailVo> locatConflicts = Lists.newArrayList();
@@ -46,37 +98,21 @@ public class CourseDetailServiceImpl implements CourseDetailService {
 		//4.检查教员是否冲突，授课日期+授课节次+教员id
 		int teacherid = courseDetailRequest.getTeacherid();
 		List<CourseDetailVo> teacherConflicts = Lists.newArrayList();
-		//该期班已经存在课表才进行冲突检测
-		if(CollectionUtils.isNotEmpty(courseDetailBySksj) && CollectionUtils.isNotEmpty(typeDatas)) {
-			fillNameInfo(courseDetailBySksj, typeDatas);
-			courseDetailBySksj.stream().forEach(courseDetail -> {
-				int locateid = courseDetail.getTeachlocid();
-				String clsno = courseDetail.getClassno();
-				int teachid = courseDetail.getTeacherid();
-				if(teachlocid == locateid) {
-					locatConflicts.add(courseDetail);
-				} else if(clsno.equals(classno)) {
-					classnoConflicts.add(courseDetail);
-				} else if(teachid == teacherid) {
-					teacherConflicts.add(courseDetail);
-				}
-			});
-			List<CourseDetailVo> conflictDetail = (List<CourseDetailVo>) CollectionUtils.union(teacherConflicts,
-					CollectionUtils.union(locatConflicts, classnoConflicts));
-			//存在冲突
-			if(CollectionUtils.isNotEmpty(conflictDetail)) {
-				response.setCode(Message.DETAILCOURSECONFLICT.getCode());
-				response.setMessage(Message.DETAILCOURSECONFLICT.getMsg());
-				response.setCourseDetailVos(conflictDetail);
-				return response;
-			} 
-		}
-		CourseDetail courseDetail = new CourseDetail(courseDetailRequest.getCourseid(), teacherid, courseDetailRequest.getPrime(), 
-				courseDetailRequest.getTeachtypeid(), teachdate, teachlocid, teachsessid, courseDetailRequest.getTeachcontent());
-		this.courseDetailDao.addCourseDetail(courseDetail);
-		response.setCode(Message.DETAILCOURSEADDSUCCESS.getCode());
-		response.setMessage(Message.DETAILCOURSEADDSUCCESS.getMsg());
-		return response;
+		courseDetailBySksj.stream().forEach(courseDetail -> {
+			int locateid = courseDetail.getTeachlocid();
+			String clsno = courseDetail.getClassno();
+			int teachid = courseDetail.getTeacherid();
+			if(teachlocid == locateid) {
+				locatConflicts.add(courseDetail);
+			} else if(clsno.equals(classno)) {
+				classnoConflicts.add(courseDetail);
+			} else if(teachid == teacherid) {
+				teacherConflicts.add(courseDetail);
+			}
+		});
+		List<CourseDetailVo> conflictDetail = (List<CourseDetailVo>) CollectionUtils.union(teacherConflicts,
+				CollectionUtils.union(locatConflicts, classnoConflicts));
+		return conflictDetail;
 	}
 
 	private void fillNameInfo(List<CourseDetailVo> courseDetailByClassid, List<TypeData> typeDatas) {
@@ -103,5 +139,4 @@ public class CourseDetailServiceImpl implements CourseDetailService {
 			courseDetail.setTeachsess(teachsess);
 		});
 	}
-
 }

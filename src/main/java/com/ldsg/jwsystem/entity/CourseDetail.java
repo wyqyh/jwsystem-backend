@@ -11,6 +11,7 @@ public class CourseDetail {
 	private int teachlocid;
 	private int teachsessid;
 	private String teachcontent;
+	private int createrid;
 	private String createTime;
 	
 	public CourseDetail(int id, int courseid, int teacherid, int prime, int teachtypeid, String teachdate,
@@ -28,7 +29,7 @@ public class CourseDetail {
 	}
 	
 	public CourseDetail(int courseid, int teacherid, int prime, int teachtypeid, String teachdate,
-			int teachlocid, int teachsessid, String teachcontent) {
+			int teachlocid, int teachsessid, String teachcontent, int createrid) {
 		this.courseid = courseid;
 		this.teacherid = teacherid;
 		this.prime = prime;
@@ -37,6 +38,7 @@ public class CourseDetail {
 		this.teachlocid = teachlocid;
 		this.teachsessid = teachsessid;
 		this.teachcontent = teachcontent;
+		this.createrid = createrid;
 	}
 	
 	public int getId() {
@@ -93,6 +95,13 @@ public class CourseDetail {
 	public void setTeachcontent(String teachcontent) {
 		this.teachcontent = teachcontent;
 	}
+	public int getCreaterid() {
+		return createrid;
+	}
+	public void setCreaterid(int createrid) {
+		this.createrid = createrid;
+	}
+
 	public String getCreateTime() {
 		return createTime;
 	}
