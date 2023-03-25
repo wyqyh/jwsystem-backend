@@ -11,7 +11,7 @@
  Target Server Version : 50737
  File Encoding         : 65001
 
- Date: 25/03/2023 20:03:04
+ Date: 26/03/2023 01:23:59
 */
 
 SET NAMES utf8mb4;
@@ -308,7 +308,7 @@ CREATE TABLE `t_type_data`  (
   `typeno` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 60 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of t_type_data
@@ -337,6 +337,40 @@ INSERT INTO `t_type_data` VALUES (21, 12, '1012', '授课节次2');
 INSERT INTO `t_type_data` VALUES (22, 12, '1012', '授课节次3');
 INSERT INTO `t_type_data` VALUES (23, 12, '1012', '授课节次4');
 INSERT INTO `t_type_data` VALUES (24, 12, '1012', '授课节次5');
+INSERT INTO `t_type_data` VALUES (25, 13, '1013', 'junguan');
+INSERT INTO `t_type_data` VALUES (26, 13, '1013', 'shiguan');
+INSERT INTO `t_type_data` VALUES (27, 13, '1013', 'zhuangaiwenzhi');
+INSERT INTO `t_type_data` VALUES (28, 13, '1013', 'shepinwenzhi');
+INSERT INTO `t_type_data` VALUES (29, 14, '1014', 'guanliyuan');
+INSERT INTO `t_type_data` VALUES (30, 14, '1014', 'jiaowurenyuan');
+INSERT INTO `t_type_data` VALUES (31, 14, '1014', 'renkejiaoyuan');
+INSERT INTO `t_type_data` VALUES (32, 14, '1014', 'daduiganbu');
+INSERT INTO `t_type_data` VALUES (33, 13, '1013', 'feibianrenyuan');
+INSERT INTO `t_type_data` VALUES (34, 15, '1015', 'zhujiao');
+INSERT INTO `t_type_data` VALUES (35, 15, '1015', 'jiangshi');
+INSERT INTO `t_type_data` VALUES (36, 15, '1015', 'fujiaoshou');
+INSERT INTO `t_type_data` VALUES (37, 15, '1015', 'jiaoshou');
+INSERT INTO `t_type_data` VALUES (38, 16, '1016', 'chuji');
+INSERT INTO `t_type_data` VALUES (39, 16, '1016', 'zhongji');
+INSERT INTO `t_type_data` VALUES (40, 16, '1016', 'gaoji');
+INSERT INTO `t_type_data` VALUES (41, 17, '1017', '十三级');
+INSERT INTO `t_type_data` VALUES (42, 17, '1017', '十二级');
+INSERT INTO `t_type_data` VALUES (43, 17, '1017', '十一级');
+INSERT INTO `t_type_data` VALUES (44, 17, '1017', '十级');
+INSERT INTO `t_type_data` VALUES (45, 17, '1017', '九级');
+INSERT INTO `t_type_data` VALUES (46, 17, '1017', '八级');
+INSERT INTO `t_type_data` VALUES (47, 17, '1017', '七级');
+INSERT INTO `t_type_data` VALUES (49, 17, '1017', '五级');
+INSERT INTO `t_type_data` VALUES (50, 17, '1017', '六级');
+INSERT INTO `t_type_data` VALUES (51, 17, '1017', '四级');
+INSERT INTO `t_type_data` VALUES (52, 17, '1017', '三级');
+INSERT INTO `t_type_data` VALUES (53, 17, '1017', '二级');
+INSERT INTO `t_type_data` VALUES (54, 17, '1017', '一级');
+INSERT INTO `t_type_data` VALUES (55, 18, '1018', '22级');
+INSERT INTO `t_type_data` VALUES (56, 18, '1018', '21级');
+INSERT INTO `t_type_data` VALUES (57, 18, '1018', '20级');
+INSERT INTO `t_type_data` VALUES (58, 18, '1018', '19级');
+INSERT INTO `t_type_data` VALUES (59, 18, '1018', '18级');
 
 -- ----------------------------
 -- Table structure for t_type_manage
@@ -347,15 +381,13 @@ CREATE TABLE `t_type_manage`  (
   `no` varchar(11) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '编号',
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of t_type_manage
 -- ----------------------------
 INSERT INTO `t_type_manage` VALUES (1, '1001', '培训层次');
 INSERT INTO `t_type_manage` VALUES (2, '1002', '任务类别');
-INSERT INTO `t_type_manage` VALUES (3, '1003', '人员类别');
-INSERT INTO `t_type_manage` VALUES (4, '1004', '职称类别');
 INSERT INTO `t_type_manage` VALUES (5, '1005', '证件类别');
 INSERT INTO `t_type_manage` VALUES (6, '1006', '实践类型');
 INSERT INTO `t_type_manage` VALUES (7, '1007', '教学类型');
@@ -364,6 +396,12 @@ INSERT INTO `t_type_manage` VALUES (9, '1009', '教室位置');
 INSERT INTO `t_type_manage` VALUES (10, '1010', '专业名称');
 INSERT INTO `t_type_manage` VALUES (11, '1011', '开课学期');
 INSERT INTO `t_type_manage` VALUES (12, '1012', '授课节次');
+INSERT INTO `t_type_manage` VALUES (13, '1013', '人员分类');
+INSERT INTO `t_type_manage` VALUES (14, '1014', '人员类别');
+INSERT INTO `t_type_manage` VALUES (15, '1015', '职称');
+INSERT INTO `t_type_manage` VALUES (16, '1016', '职称等级');
+INSERT INTO `t_type_manage` VALUES (17, '1017', '技术级别');
+INSERT INTO `t_type_manage` VALUES (18, '1018', '岗位级别');
 
 -- ----------------------------
 -- Table structure for t_user
@@ -381,12 +419,15 @@ CREATE TABLE `t_user`  (
   `avatar` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   `idcard` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '身份证号',
   `cardno` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '证件号，军官证号、士兵证号、文职证号',
-  `usertype` int(11) NULL DEFAULT 0 COMMENT '用户类别，管理员、教务人员、任课教员、大队干部',
-  `categoryid` int(11) NULL DEFAULT NULL COMMENT '所属分类，军官、士官、转改文职、社聘文职、非编人员',
+  `usertype` int(11) NULL DEFAULT 0 COMMENT '人员类别，管理员、教务人员、任课教员、大队干部',
+  `categoryid` int(11) NULL DEFAULT NULL COMMENT '人员分类，军官、士官、转改文职、社聘文职、非编人员',
   `jobtitleid` int(11) NULL DEFAULT NULL COMMENT '职称，助教、讲师、副教授、教授',
   `joblevelid` int(11) NULL DEFAULT NULL COMMENT '职称等级，初级、中级、高级',
+  `jobdate` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '取得当前职称的日期',
   `skilllevelid` int(11) NULL DEFAULT NULL COMMENT '技术级别',
+  `skillleveldate` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '取得当前技术等级的日期',
   `postlevelid` int(11) NULL DEFAULT NULL COMMENT '岗位等级',
+  `enlistdate` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入伍日期',
   `create_time` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
@@ -394,9 +435,9 @@ CREATE TABLE `t_user`  (
 -- ----------------------------
 -- Records of t_user
 -- ----------------------------
-INSERT INTO `t_user` VALUES (1, '管理员31', 'admin', 'admin', '男', '13597807743', 25, '02758696543', '/api/avatar/光猫.jpg', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, '2023-03-17 15:51:02');
-INSERT INTO `t_user` VALUES (2, '123', '123', '123', NULL, NULL, 1, '123', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2023-03-17 15:50:09');
-INSERT INTO `t_user` VALUES (5, '321', '321', '321', NULL, NULL, 26, '321', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2023-03-17 15:50:11');
+INSERT INTO `t_user` VALUES (1, '管理员31', 'admin', 'admin', '男', '13597807743', 25, '02758696543', '/api/avatar/光猫.jpg', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2023-03-17 15:51:02');
+INSERT INTO `t_user` VALUES (2, '123', '123', '123', NULL, NULL, 1, '123', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2023-03-17 15:50:09');
+INSERT INTO `t_user` VALUES (5, '321', '321', '321', NULL, NULL, 26, '321', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2023-03-17 15:50:11');
 
 -- ----------------------------
 -- Table structure for t_user_role
